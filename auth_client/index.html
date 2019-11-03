@@ -1,57 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Apty auth server</title>
 </head>
+
 <body>
 
-<script>
+    <script>
 
+        const LOGIN_KEY = 'LOGIN_KEY';
 
-    async function postData(url = '', data = {}) {
-        // Default options are marked with *
-        const response = await fetch(url, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, *same-origin, omit
-            headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer', // no-referrer, *client
-            body: JSON.stringify(data) // body data type must match "Content-Type" header
-        });
-        return await response.json(); // parses JSON response into native JavaScript objects
-    }
-
-
-    async function checkLogin() {
-        const  email = document.querySelector('body > div > input[type=text]:nth-child(2)').value;
-        const  password = document.querySelector('body > div > input[type=password]:nth-child(4)').value;
-        try {
-            const data = await postData('http://localhost:8080/auth/login', {
-                email,
-                password
-            });
-            alert(`you will be redirected to requested URL with this token ${data.token}`);
-            const redirectURL = `${window.location.search.split("?")[1].split("=")[1]}/${data.token}`;
-            window.location.replace(redirectURL);
-        } catch (error) {
-            console.error(error);
-            alert('check email and password');
+        function setLoginKey(token) {
+            window.localStorage.setItem(LOGIN_KEY, token);
         }
-    }
-</script>
 
-<div class="container">
-    <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="uname" required>
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required>
-    <button  onclick="checkLogin()" type="submit">Login</button>
-</div>
+        function getLoginKey() {
+            return window.localStorage.getItem(LOGIN_KEY);
+        }
+
+        async function checkToken() {
+            try {
+                const token = getLoginKey();
+                if (!token) {
+                    return;
+                }
+                const lol = await postData('http://localhost:8080/token/isvalid', {
+                    token
+                });
+                if(!lol.status) {
+                    return;
+                }
+                alert(`You are logged in system so redirecting with token ${token}`);
+                const redirectURL = `${window.location.search.split("?")[1].split("=")[1]}/${token}`;
+                window.location.replace(redirectURL);
+
+            } catch (error) {
+                alert('errorrr')
+                console.error(error);
+            }
+        }
+
+
+        checkToken()
+
+        async function postData(url = '', data = {}) {
+            // Default options are marked with *
+            const response = await fetch(url, {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                redirect: 'follow', // manual, *follow, error
+                referrer: 'no-referrer', // no-referrer, *client
+                body: JSON.stringify(data) // body data type must match "Content-Type" header
+            });
+            return await response.json(); // parses JSON response into native JavaScript objects
+        }
+
+
+        async function checkLogin() {
+            const email = document.querySelector('body > div > input[type=text]:nth-child(2)').value;
+            const password = document.querySelector('body > div > input[type=password]:nth-child(4)').value;
+            try {
+                const data = await postData('http://localhost:8080/auth/login', {
+                    email,
+                    password
+                });
+                if(!data.token) {
+                    throw new Error();
+                }
+                alert(`you will be redirected to requested URL with this token ${data.token}`);
+                setLoginKey(data.token);
+                const redirectURL = `${window.location.search.split("?")[1].split("=")[1]}/${data.token}`;
+                window.location.replace(redirectURL);
+            } catch (error) {
+                console.error(error);
+                alert('check email and password');
+            }
+        }
+    </script>
+
+    <div class="container">
+        <label for="uname"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" name="uname" required>
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="psw" required>
+        <button onclick="checkLogin()" type="submit">Login</button>
+    </div>
 </body>
+
 </html>

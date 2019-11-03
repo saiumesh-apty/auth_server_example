@@ -40,6 +40,7 @@ fn main() -> std::io::Result<()> {
                 Cors::new()
                     .allowed_origin("http://localhost:8081")
                     .allowed_origin("http://localhost:8080")
+                    .allowed_origin("http://localhost:8082")
                     .allowed_origin("https://apty-birthday-reminder.herokuapp.com")
                     .allowed_methods(vec!["GET", "POST", "PUT"])
                     .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
