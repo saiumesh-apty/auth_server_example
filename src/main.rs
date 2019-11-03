@@ -2,6 +2,7 @@ use std::env;
 
 use actix_web::{App, HttpServer, http::header};
 use actix_cors::Cors;
+use actix_files as fs;
 
 // auth routes
 mod auth;
@@ -38,6 +39,7 @@ fn main() -> std::io::Result<()> {
             .wrap(
                 Cors::new()
                     .allowed_origin("http://localhost:8081")
+                    .allowed_origin("http://localhost:8080")
                     .allowed_origin("https://apty-birthday-reminder.herokuapp.com")
                     .allowed_methods(vec!["GET", "POST", "PUT"])
                     .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
@@ -47,6 +49,7 @@ fn main() -> std::io::Result<()> {
             .register_data(Data::new(redis_client.clone()))
             .service(auth_routes())
             .service(token_routes())
+            .service(fs::Files::new("/", "auth_client").index_file("index.html"))
     })
     .bind(address)?
     .run()

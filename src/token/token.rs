@@ -13,7 +13,9 @@ pub fn token_handler(body: Json<TokenBody>, redis: Data<RedisType>) -> HttpRespo
         .unwrap()
         .get::<String, String>(body.token.clone())
     {
-        Ok(_) => HttpResponse::Ok().json(Response { status: true }),
+        Ok(repo) => {
+            HttpResponse::Ok().json(Response { status: true })
+        },
         Err(err) => HttpResponse::BadRequest().json(MessageResponse {
             status: false,
             message: String::from("Check token"),
