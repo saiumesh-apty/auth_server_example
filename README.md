@@ -4,7 +4,7 @@ Apty Auth server flow example
 Technical stack
 
 1. Server written in Rust
-2. Client one and Two written with React
+2. Client one and two written with React
 3. Runtime tools written in Go
 4. Redis for token exchange
 
