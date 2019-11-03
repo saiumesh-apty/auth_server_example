@@ -1,25 +1,17 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Router, Route, Redirect } from 'react-router-dom';
+import { history } from './utils/router_history';
+import { ROUTER_PATHS } from './utils/router_paths';
+import Login from './components/login/login.component';
+import CheckToken from './components/token/check.token.component';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router history={history}>
+      <Route exact path={ROUTER_PATHS.BASE} render={() => <Redirect to={ROUTER_PATHS.LOGIN} />} />
+      <Route path={ROUTER_PATHS.CHECK_TOKEN} component={CheckToken} />
+      <Route path={ROUTER_PATHS.LOGIN} component={Login} />
+    </Router>
   );
 }
 
